@@ -67,3 +67,9 @@ int main()
     if(valid && size == 0) printf("Valid\n");
     else printf("Invalid\n");
 }
+
+/*
+Output
+Enter the parenthesis : {}[(({}[()]))]
+Valid
+*/

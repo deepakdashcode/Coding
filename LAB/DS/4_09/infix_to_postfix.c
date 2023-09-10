@@ -4,7 +4,6 @@
 char pop(char arr[], int *size){
     if((*size) != 0)
         (*size) --;
-    
     return arr[*size];
 }
 int precedence(char ch)
@@ -37,10 +36,10 @@ void disp(char arr[], int size)
 }
 int main()
 {
-    char exp[100];
-    char stack[100];
+    char exp[MAX_SIZE];
+    char stack[MAX_SIZE];
     int stackSize = 0;
-    char ans[100]; // to store infix to postfix
+    char ans[MAX_SIZE]; // to store infix to postfix
     int ansSize = 0;
     printf("Enter the expression inside () : ");
     scanf("%s", exp);
@@ -82,7 +81,7 @@ int main()
     printf("Postfix expression : ");
     disp(ans, ansSize);
     stackSize = 0; // To Reset the stack
-    char sol[100]; // To evaluate the expression
+    char sol[MAX_SIZE]; // To evaluate the expression
     int solSize = 0;
     for(int i = 0; i < ansSize; i ++)
     {
@@ -105,3 +104,9 @@ int main()
     }
 printf("Solution = %c", sol[0]); 
 }
+/*
+Output
+Enter the expression inside () : (2+3/5+2*4-6)
+Postfix expression : 2 3 5 / + 2 4 * + 6 -
+Solution = 4
+*/
