@@ -7,109 +7,101 @@ char pop(char arr[], int *size){
     
     return arr[*size];
 }
-int isStart(char ch)
+int precedence(char ch)
 {
-    if(ch == '(' || ch == '{' || ch == '[') return 1;
-    return 0;
-}
-int isEnd(char ch)
-{
-    if(ch == ')' || ch == '}' || ch == ']') return 1;
-    return 0;
-}
-int match(char c1, char c2)
-{
-    if(c1 == '(' && c2 == ')') return 1;
-    if(c1 == '{' && c2 == '}') return 1;
-    if(c1 == '[' && c2 == ']') return 1;
-    return 0;
+    if(ch == '(') return -1;
+    if(ch == '/' || ch == '*' || ch == '%') return 2;
+    if(ch == '+' || ch == '-') return 1;
 }
 void push(char arr[], int *size, char element)
 {
     arr[*size] = element;
     (*size) ++;
 }
-void display(char arr[], int size)
-{
-    for(int i = 0; i < size; i ++)
-        printf("%c  ", arr[i]);
-    printf("\n");
-}
 char top(char stack[], int size)
 {
     return stack[size - 1];
-}
-int precedence(char c1, char c2)
-{
-    // 0  if same
-    // 1  if c1 > c2
-    // -1 if c1 < c2
-    if(isStart(c1)) return 2;
-    if(c1 == '*' || c1 == '/' || c1 == '%')
-    {
-        if(c2 == '*' || c2 == '/' || c2 == '%') return 0;
-        else return 1;
-    }
-    if(c1 == '+' || c1 == '-')
-    {
-        if(c2 == '+' || c2 == '-') return 0;
-        return -1;
-    }
 }
 int isOp(char ch)
 {
     if(ch == '*' || ch == '/' || ch == '%' || ch == '+' || ch == '-') return 1;
     return 0;
 }
+void disp(char arr[], int size)
+{
+    for(int i = 0; i < size; i ++)
+    {
+        printf("%c ",arr[i]);
+    }
+    printf("\n");
+}
 int main()
 {
-    char inp[100];
-    printf("Enter the Expression : ");
-    scanf("%s", inp);
-    int len = strlen(inp);
-    char stack[100];
-    int size = 0;
     char exp[100];
-    int e_size = 0;
-    for(int i = 0; i < len; i ++)
+    char stack[100];
+    int stackSize = 0;
+    char ans[100]; // to store infix to postfix
+    int ansSize = 0;
+    printf("Enter the expression inside () : ");
+    scanf("%s", exp);
+    int length = strlen(exp);
+    for(int i = 0; i < length; i ++)
     {
-        char ch = inp[i];
-        if(isStart(ch))
-            push(stack, &size, ch);
-        else if(isEnd(ch))
-        {
-            while(!isStart(top(stack, size)))
-            {
-                push(exp, &e_size, pop(stack, &size));
-            }
-            pop(stack, &size);
-        }
-        else if(!isOp(ch))
-            push(exp, &e_size, ch);
+        char ch = exp[i];
+        if(!isOp(ch) && ch != '(' && ch != ')') // if operand then push to ans
+            push(ans, &ansSize, ch);
         else
         {
-            if(precedence(top(stack, size), ch) <= 0) push(stack, &size, ch);
-            else if(precedence(top(stack, size), ch) > 0) {
+            if(ch == '(' || stackSize == 0) // if stack empty or starting bracket then push to stack
+                push(stack, &stackSize, ch);
+            else{
+                if(ch != ')')
+                {   char topElement = top(stack, stackSize);
+                    if(precedence(topElement) < precedence(ch))
+                    push(stack, &stackSize, ch);
+                    else{
+                        // 
+                        while(top(stack, stackSize) != '(' && precedence(top(stack, stackSize)) >= precedence(ch) ){
+                            push(ans,&ansSize, pop(stack, &stackSize));
+                        }
+                        push(stack,&stackSize, ch);
 
-                while(precedence(top(stack, size), ch) > 0 || isStart(ch))
-                {
-                    push(exp, &e_size, pop(stack, &size));
-                    
-                    if(isStart(top(stack, size))){
-                        pop(stack, &size);
-                        break;
-                    };
+                    }
                 }
-                push(stack, &size, ch);
+                else{
+                    while(top(stack, stackSize) != '(')
+                    {
+                        push(ans, &ansSize, pop(stack, &stackSize));
+                    }
+                    pop(stack, &stackSize);
+                    // what if it's a closing bracket
+                }
             }
         }
-    }
-
-    while(size != 0)
+    }   
+    printf("Postfix expression : ");
+    disp(ans, ansSize);
+    stackSize = 0; // To Reset the stack
+    char sol[100]; // To evaluate the expression
+    int solSize = 0;
+    for(int i = 0; i < ansSize; i ++)
     {
-        push(exp, &e_size, pop(stack, &size));
+        char ch = ans[i];
+        if(!isOp(ch))
+            push(sol, &solSize, ch);
+        else{
+            int ch1 = pop(sol, &solSize) - '0';
+            int ch2 = pop(sol, &solSize) - '0';
+            int temp = 0;
+            switch(ch)
+            {
+                case '+' : temp = ch2 + ch1; break;
+                case '-' : temp = ch2 - ch1; break;
+                case '*' : temp = ch2 * ch1; break;
+                case '/' : temp = ch2 / ch1; break;
+            }
+            push(sol, &solSize, temp + '0');
+        }
     }
-
-    display(exp, e_size);
-    
+printf("Solution = %c", sol[0]); 
 }
