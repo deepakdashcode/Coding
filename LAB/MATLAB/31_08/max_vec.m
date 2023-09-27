@@ -5,7 +5,3 @@ function M = max_vec(v, ind, cur)
         M = max(v(ind),max_vec(v,ind + 1, cur));
     end
 end
-
-
-
-

@@ -6,5 +6,4 @@ function ans = prime(n)
         break;
         end
     end
-
 end
