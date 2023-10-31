@@ -6,7 +6,7 @@ class comp{
     comp(int r, int i){
         real = r;
         imag = i;
-    }
+    }  
     comp operator*(comp b){
         comp ans(0, 0);
         ans.real = real*b.real - imag*b.imag;
