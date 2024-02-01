@@ -4,13 +4,14 @@ class B;
 class A{
     public:
     int m;
-    A(){}
+    A();
     A(int m1)
     {
         m = m1;
     }
     friend void disp(B b);
 };
+A::A(){}
 class B{
     public:
     int m;
