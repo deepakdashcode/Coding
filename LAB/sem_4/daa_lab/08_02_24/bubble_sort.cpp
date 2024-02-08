@@ -1,10 +1,12 @@
 #include<bits/stdc++.h>
 using namespace std;
 int main(){
-    int n; cout << "Enter n : "; cin >> n;
+    int n = 10000;
     vector<int> arr(n);
-    cout << "Enter the elements : ";
-    for(int i = 0; i < n; i ++) cin >> arr[i];
+    //cout << "Enter the elements : ";
+    for(int i = 0; i < n; i ++) {
+        arr[i] = n - i;
+    }
     
     int noOfSwaps;
     for(int i = 0; i < n - 1; i ++){
