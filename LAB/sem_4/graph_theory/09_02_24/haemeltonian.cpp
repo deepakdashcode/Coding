@@ -46,12 +46,9 @@ bool hamiltonianPath(int graph[N][N], int v, int visited[N], int pathLength, int
 }
 
 bool hamiltonianCycle(int graph[N][N], int v, int visited[N], int pathLength, int n) {
-    // Base case: All vertices are visited (and return to starting vertex for cycle)
     if (pathLength == n && graph[v][0]) {
         return true;
     }
-
-    // Try different vertices as the next hop
     for (int i = 0; i < n; i++) {
         if (isSafe(i, graph, visited, pathLength)) {
             visited[pathLength] = i;
