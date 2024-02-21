@@ -1,100 +1,82 @@
-#include <dk.h>
-
+#include <bits/stdc++.h>
 using namespace std;
 
-// Node structure for Huffman tree
 struct Node {
-    char data;
     int freq;
-    Node* left;
-    Node* right;
+    char ch;
+    struct Node* left;
+    struct Node* right;
 };
 
-// Comparator for priority queue
-struct compare {
-    bool operator()(Node* l, Node* r) {
-        return l->freq > r->freq;
+struct compareNodes {
+    bool operator()(Node* a, Node* b) {
+        return a->freq > b->freq;
     }
 };
 
-// Function to create a new Huffman tree node
-Node* newNode(char data, int freq) {
-    Node* node = new Node();
-    node->data = data;
-    node->freq = freq;
-    node->left = nullptr;
-    node->right = nullptr;
-    return node;
+Node* buildHuffmanTree(vector<pair<char, int>>& arr) {
+    priority_queue<Node*, vector<Node*>, compareNodes> pq;
+    
+    for (auto &p : arr) {
+        auto newNode = new Node{p.second, p.first, nullptr, nullptr};
+        pq.push(newNode);
+    }
+
+    while (pq.size() > 1) {
+        auto first = pq.top(); pq.pop();
+        auto second = pq.top(); pq.pop();
+        
+        auto newNode = new Node{first->freq + second->freq, '\0', first, second};
+        pq.push(newNode);
+    }
+
+    return pq.top();
 }
 
-// Function to build Huffman tree
-Node* buildHuffmanTree(unordered_map<char, int>& freqMap) {
-    priority_queue<Node*, vector<Node*>, compare> minHeap;
+map<char, string> generateCodes(Node *root, string prefix="") {
+    map<char, string> result;
 
-    // Create leaf nodes and push them to the minHeap
-    for (auto& pair : freqMap) {
-        minHeap.push(newNode(pair.first, pair.second));
+    if (!root) return result;
+
+    if (root->left == NULL && root->right == NULL) {
+        result[root->ch] = prefix;
+        return result;
     }
 
-    // Construct Huffman tree
-    while (minHeap.size() != 1) {
-        Node* left = minHeap.top();
-        minHeap.pop();
+    auto leftCodes = generateCodes(root->left, prefix+"0");
+    result.insert(leftCodes.begin(), leftCodes.end());
 
-        Node* right = minHeap.top();
-        minHeap.pop();
+    auto rightCodes = generateCodes(root->right, prefix+"1");
+    result.insert(rightCodes.begin(), rightCodes.end());
 
-        int sum = left->freq + right->freq;
-        Node* parent = newNode('$', sum); // '$' is a special character used to denote internal nodes
-        parent->left = left;
-        parent->right = right;
-        minHeap.push(parent);
-    }
-
-    return minHeap.top();
-}
-
-// Function to traverse Huffman tree and generate codes
-void generateCodes(Node* root, string code, unordered_map<char, string>& codes) {
-    if (root == nullptr) return;
-
-    if (root->data != '$') {
-        codes[root->data] = code;
-    }
-
-    generateCodes(root->left, code + "0", codes);
-    generateCodes(root->right, code + "1", codes);
-}
-
-// Function to encode a string using Huffman codes
-string encode(string input, unordered_map<char, string>& codes) {
-    string encodedString = "";
-    for (char c : input) {
-        encodedString += codes[c];
-    }
-    return encodedString;
+    return result;
 }
 
 int main() {
-    string input = "ABBCDBCCDAABBEEEBEAB";
+    string input;
+    cout << "Enter a string: ";
+    getline(cin, input);
 
-    unordered_map<char, int> freqMap;
+    map<char, int> freqMap;
     for (char c : input) {
-        freqMap[c]++;
+        ++freqMap[c];
     }
 
-    Node* root = buildHuffmanTree(freqMap);
-
-    unordered_map<char, string> codes;
-    generateCodes(root, "", codes);
-
-    cout << "Character Codes:\n";
-    for (auto& pair : codes) {
-        cout << pair.first << ": " << pair.second << endl;
+    vector<pair<char, int>> freqVec;
+    for (auto &p : freqMap) {
+        freqVec.emplace_back(p.first, p.second);
     }
 
-    string encodedString = encode(input, codes);
-    cout << "Encoded String: " << encodedString << endl;
+    auto root = buildHuffmanTree(freqVec);
 
+    map<char, string> codes = generateCodes(root);
+
+    cout << "Huffman Codes:\n";
+    for (auto &p : codes)
+        cout << p.first << " : " << p.second << '\n';
+    
+    for(char ch: input)
+        cout << codes[ch];
+    cout << "\n";
     return 0;
 }
